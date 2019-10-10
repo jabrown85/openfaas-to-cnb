@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -eo pipefail
+
+echo "---> Heroku fwatchdog"
+
+layersdir=$1
+
+echo "Downloading fwatchdog"
+fwatchdoglayer="$layersdir"/fwatchdog
+mkdir -p "$fwatchdoglayer"
+curl https://github.com/openfaas/faas/releases/download/0.18.0/fwatchdog -s -L -o "$fwatchdoglayer/fwatchdog"
+chmod +x "$fwatchdoglayer/fwatchdog"
+
+echo -e 'launch = true' > "$fwatchdoglayer.toml"
+
+echo "processes = [{ type = \"web\", command = \"$fwatchdoglayer/fwatchdog\"}]" > "$layersdir/launch.toml"
+
+exit 0

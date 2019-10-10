@@ -1,0 +1,9 @@
+api = "0.2"
+
+[buildpack]
+id = "heroku/fwatchdog-buildpack"
+name = "Heroku OpenFaas fwatchdog Buildpack"
+version = "0.0.1"
+
+[[stacks]]
+id = "heroku-18"

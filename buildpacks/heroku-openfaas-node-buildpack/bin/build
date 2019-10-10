@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+set -eo pipefail
+
+echo "---> Heroku openfaas node"
+
+layersdir=$1
+
+openfaasnodelayer="$layersdir"/openfaas
+mkdir -p "$openfaasnodelayer"
+
+echo "Downloading openfaas node template"
+curl https://github.com/openfaas/templates/archive/1.2.tar.gz -s -L -o - | tar xzf - -C "$openfaasnodelayer"
+
+echo -e 'launch = true' > "$openfaasnodelayer.toml"
+
+echo "Installing dependencies for template layer"
+cd "$openfaasnodelayer/templates-1.2/template/node"
+npm install
+
+echo "Replacing example function with user function"
+rm -rf function/
+ln -s /app function
+
+# configure watchdog to run this template index.js
+mkdir -p "$openfaasnodelayer/env"
+echo -n "true" > "$openfaasnodelayer/env/cgi_headers"
+echo -n "node $openfaasnodelayer/templates-1.2/template/node/index.js" > "$openfaasnodelayer/env/fprocess"
+
+exit 0
